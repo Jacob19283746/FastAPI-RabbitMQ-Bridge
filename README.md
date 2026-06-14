@@ -1,6 +1,6 @@
 # FastAPI RabbitMQ Bridge
 
-Сервис принимает **GET**-запросы с **любыми** query-параметрами, обрабатывает их и отправляет **JSON** в очередь RabbitMQ **`handler-queue`**.
+Сервис принимает **GET**-запросы с **любыми** query-параметрами, обрабатывает их и отправляет **JSON** в очередь RabbitMQ **`fastapi_bridge`**.
 
 Имена полей не фиксированы — можно передать что угодно, например:
 
@@ -21,7 +21,7 @@ GET http://localhost:8000/?order_id=42&status=new&comment=срочно
    - параметры с **пустым именем** (только пробелы) отбрасываются;
    - один ключ в URL → строка в JSON, тот же ключ повторно → массив строк (например `?tag=a&tag=b` → `"tag": ["a", "b"]`).
 3. **Проверка** — если после нормализации не осталось ни одного параметра, ответ `400`.
-4. **Публикация** — итоговый словарь сериализуется в JSON и кладётся в `handler-queue`.
+4. **Публикация** — итоговый словарь сериализуется в JSON и кладётся в `fastapi_bridge`.
 
 
 ## Зависимости
@@ -76,8 +76,8 @@ curl "http://localhost:8000/?phone_number=79000000000&message_text=Hello+World!"
 
 ```json
 {
-  "status": "queued",
-  "queue": "handler-queue",
+  "status": 201,
+  "message": "Successfully submitted parameters to the queue",
   "data": { "phone_number": "79000000000", "message_text": "Hello" }
 }
 ```

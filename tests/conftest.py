@@ -1,20 +1,27 @@
-from collections.abc import Iterator
-from unittest.mock import AsyncMock, patch
-
 import pytest
-from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
+
+from main import app
 
 
 @pytest.fixture
-def client() -> Iterator[TestClient]:
-    from app.rabbit import publisher
-    from main import app
+async def client():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client
 
-    with (
-        patch.object(publisher, "connect", new_callable=AsyncMock),
-        patch.object(publisher, "close", new_callable=AsyncMock),
-        patch.object(publisher, "publish", new_callable=AsyncMock) as publish_mock,
-    ):
-        publish_mock.return_value = None
-        with TestClient(app) as test_client:
-            yield test_client
+@pytest.fixture
+def mock_rabbitmq(monkeypatch):
+    class MockRabbitMQ:
+        async def connect(self):
+            return True
+
+        async def close(self):
+            return True
+
+        async def push_message(self, message: bytes) -> bool:
+            return True
+
+    mock = MockRabbitMQ()
+    monkeypatch.setattr("app.routers.rabbitmq_client", mock)
+    return mock
