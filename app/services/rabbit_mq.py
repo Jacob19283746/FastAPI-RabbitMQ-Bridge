@@ -80,7 +80,7 @@ class RabbitMQClient:
 
 
 rabbitmq_client = RabbitMQClient(
-    url_rabbitmq=os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:"),
+    url_rabbitmq=os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost/"),
     queue_name=os.getenv("RABBITMQ_QUEUE", "fastapi_bridge"),
     publisher_confirms=False
 )

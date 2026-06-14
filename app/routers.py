@@ -56,7 +56,7 @@ async def publish_message(request: Request) -> PushQueueResponse:
             detail="Нужен хотя бы один query-параметр с непустым именем.",
         )
     result_published_msg = await rabbitmq_client.push_message(
-        message=json.dumps(normalize_params, ensure_ascii=True).encode("utf-8")
+        message=json.dumps(normalize_params, ensure_ascii=False).encode("utf-8")
     )
     if not result_published_msg:
         raise HTTPException(
@@ -71,7 +71,7 @@ async def publish_message(request: Request) -> PushQueueResponse:
 
 
 @router.get("/health", summary="Проверка работоспособности сервиса")
-async def health_check():
+async def health_check() -> HealthCheckResponse:
     if not rabbitmq_client.connection or rabbitmq_client.connection.is_closed:
         raise HTTPException(
             status_code=503,
