@@ -1,15 +1,13 @@
 import pytest
 
-from app.services.rabbit_mq import rabbitmq_client
-
 @pytest.mark.asyncio
-async def test_rabbit_mq_connection():
-    assert await rabbitmq_client.connect()
-    assert await rabbitmq_client.close()
+async def test_rabbit_mq_connection(mock_rabbitmq):
+    assert await mock_rabbitmq.connect()
+    assert await mock_rabbitmq.close()
 
 
 @pytest.mark.asyncio
-async def test_publish_message_to_queue():
-    assert await rabbitmq_client.connect()
-    assert await rabbitmq_client.push_message(b"my_test_exchange")
-    assert await rabbitmq_client.close()
+async def test_publish_message_to_queue(mock_rabbitmq):
+    assert await mock_rabbitmq.connect()
+    assert await mock_rabbitmq.push_message(b"my_test_exchange")
+    assert await mock_rabbitmq.close()
