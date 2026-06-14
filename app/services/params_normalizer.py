@@ -11,6 +11,8 @@ async def normalize_query_params(items: list) -> dict:
         if not clean_key:
             continue
         clean_value = value.strip() if value else ""
+        if not clean_value or clean_value in ['""', "''", '" "', "' '"]:
+            continue
         existing = normalized.get(clean_key)
         if existing is None:
             normalized[clean_key] = clean_value
@@ -23,4 +25,4 @@ async def normalize_query_params(items: list) -> dict:
 
 if __name__ == "__main__":
     import asyncio
-    print(asyncio.run(normalize_query_params(items=[])))
+    print(asyncio.run(normalize_query_params(items=[("tag", " ")])))

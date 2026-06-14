@@ -50,10 +50,11 @@ async def publish_message(request: Request) -> PushQueueResponse:
     normalize_params =  await normalize_query_params(
         items=request.query_params.multi_items()
     )
+    print(normalize_params)
     if not normalize_params:
         raise HTTPException(
             status_code=400,
-            detail="Нужен хотя бы один query-параметр с непустым именем.",
+            detail="Нужен хотя бы один query-параметр с непустым значением.",
         )
     result_published_msg = await rabbitmq_client.push_message(
         message=json.dumps(normalize_params, ensure_ascii=False).encode("utf-8")
@@ -65,7 +66,7 @@ async def publish_message(request: Request) -> PushQueueResponse:
         )
     return PushQueueResponse(
         status_code=201,
-        message="Successfully submitted parameters to the queue",
+        message="Параметр(ы) успешно добавлены в очередь RabbitMQ.",
         data=normalize_params,
     )
 
@@ -75,7 +76,7 @@ async def health_check() -> HealthCheckResponse:
     if not rabbitmq_client.connection or rabbitmq_client.connection.is_closed:
         raise HTTPException(
             status_code=503,
-            detail="RabbitMQ connection is not available"
+            detail="RabbitMQ не установлено"
         )
 
     return HealthCheckResponse(
